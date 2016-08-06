@@ -1,0 +1,22 @@
+{
+  "name": "nosun/swoole",
+  "description": "php tcp server by swoole",
+  "license": "MIT",
+  "keywords": ["tcp swoole"],
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "nosun",
+      "email": "nosun2008@126.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.5.9"
+  },
+
+  "autoload": {
+    "psr-0": {
+      "Nosun\\Swoole\\": "src/"
+    }
+  }
+}
