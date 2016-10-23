@@ -5,15 +5,6 @@ use Nosun\Swoole\Server\WebSocket\Protocol;
 
 class WebSocketBox extends Box
 {
-    protected $serverType = 'swoole_websocket_server_ssl';
-
-    protected function addListener(){
-    
-        $this->sw->addlistener('10.24.191.119', 9002, SWOOLE_SOCK_TCP);
-        $this->sw->addlistener('10.24.191.119', 9003, SWOOLE_SOCK_TCP);
-
-    }
-
     // create swoole_websocket_server,set server,set callback function
     protected function addCallback() {
         $this->sw->on('Open', function($server,$fd){

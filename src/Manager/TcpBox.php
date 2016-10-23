@@ -8,6 +8,10 @@ class TcpBox extends Box
     protected $sockType   = SWOOLE_SOCK_TCP;
     protected $serverType = 'swoole_server';
 
+    public function __construct($conf){
+        parent::__construct($conf);
+    }
+
     // create swoole server，set server，set callback function
     protected function addCallback() {
 
