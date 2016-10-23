@@ -148,7 +148,7 @@ abstract class Box implements Driver {
             if($ssl){
                 $this->sw->addlistener($host, $port, SWOOLE_SOCK_TCP | SWOOLE_SSL); // websocket http tcp
             }else{
-                $this->sw->addlistener($host, $port, $socketType); // websocket , tcp, udp, http
+                $this->sw->addlistener($host, $port, constant($socketType)); // websocket , tcp, udp, http
             }
 
         }
