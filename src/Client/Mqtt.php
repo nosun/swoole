@@ -8,7 +8,7 @@ class Mqtt {
 
     public function __construct($config='mqtt.php',$host='127.0.0.1',$port='1883'){
 
-        $conf = Config::load(CONFPATH.$config);
+        $conf = Config::load(CONF_PATH.$config);
         $host = $conf['host']?$conf['host']:$host;
         $port = $conf['port']?$conf['port']:$port;
         $this->mq     = new \Mosquitto\client();

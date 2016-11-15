@@ -9,7 +9,7 @@ class Socket
 
     public function __construct($config='socket.php')
     {
-        $conf = Config::load(CONFPATH.$config);
+        $conf = Config::load(CONF_PATH.$config);
         $this->type = constant($conf->get('type'));
         $host = $conf->get('host');
         $port = $conf->get('port');

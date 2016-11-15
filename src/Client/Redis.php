@@ -1,22 +1,18 @@
 <?php namespace Nosun\Swoole\Client;
 
-use Mockery\Exception;
-use Noodlehaus\Config;
-
 class Redis {
 
 	protected $_redis;
-	protected $_config;
+	protected $config;
 
-	public function __construct(){
-		$conf = Config::load(CONFPATH.'redis.php');
-		$this->_config['host'] = $conf->get('redis.host')?$conf->get('redis.host'):'127.0.0.1';
-		$this->_config['port'] = $conf->get('redis.port')?$conf->get('redis.port'):6379;
-		$this->_config['timeout'] =$conf->get('redis.timeout')?$conf->get('redis.timeout'):0.0;
-		$this->_config['pass'] = $conf->get('redis.pass');
-		$this->_config['timeout'] =$conf->get('redis.database');
-		$this->_config['pconnect'] =$conf->get('redis.pconnect');
-		unset($conf);
+	public function __construct($config){
+		$this->config['host'] = isset($config['host']) ? $config['host'] : '127.0.0.1';
+		$this->config['port'] = isset($config['port']) ? $config['port'] : 6379;
+		$this->config['timeout'] = isset($config['timeout']) ? $config['timeout'] : 0.0;
+		$this->config['pass'] = isset($config['pass']) ? $config['pass'] : '';
+		$this->config['database'] = isset($config['database']) ? $config['database'] : 1;
+		$this->config['pconnect'] = isset($config['pconnect']) ? $config['pconnect'] : false;
+
 		try {
 			if ($this->_redis)
 			{
@@ -31,20 +27,20 @@ class Redis {
 
 	protected function connect(){
 
-		if ($this->_config['pconnect'])
+		if ($this->config['pconnect'])
 		{
-			$this->_redis->pconnect($this->_config['host'], $this->_config['port'], $this->_config['timeout']);
+			$this->_redis->pconnect($this->config['host'], $this->config['port'], $this->config['timeout']);
 		}
 		else
 		{
-			$this->_redis->connect($this->_config['host'], $this->_config['port'], $this->_config['timeout']);
+			$this->_redis->connect($this->config['host'], $this->config['port'], $this->config['timeout']);
 		}
-		if(!empty($this->_config['pass'])){
-			$this->_redis->auth($this->_config['pass']);
+		if(!empty($this->config['pass'])){
+			$this->_redis->auth($this->config['pass']);
 		}
-		if (!empty($this->_config['database']))
+		if (!empty($this->config['database']))
 		{
-			$this->_redis->select($this->_config['database']);
+			$this->_redis->select($this->config['database']);
 		}
 	}
 

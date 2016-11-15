@@ -49,16 +49,6 @@ abstract class Box implements Driver {
         $this->managerPidFile = $this->runPath . '/' . $this->processName . '.manager.pid';
         $this->serverClass    = $this->mainSetting['server_class'] ? $this->mainSetting['server_class'] : '';
 
-        // trans listener
-        if ($this->mainSetting['listen'])
-        {
-            $this->host = $this->mainSetting['listen']['host'] ? $this->mainSetting['listen']['host'] : $this->host;
-            $this->port = $this->mainSetting['listen']['port'] ? $this->mainSetting['listen']['port'] : $this->port;
-	    if(isset($this->mainSetting['listen']['type'])){
-	         $this->socketType = constant($this->mainSetting['listen']['type']);
-	    }
-        }
-
         // set user
         if (isset($this->mainSetting['user']))
         {
@@ -84,22 +74,31 @@ abstract class Box implements Driver {
 
     protected function initServer() {
 
-        // 申明swoole Server 类型，加上根命名空间;
-        $serverType = $this->serverType;
+        $serverType = $this->getServerType();
+
+        if ($this->mainSetting['listen'])
+        {
+            $this->host = $this->mainSetting['listen']['host'] ? $this->mainSetting['listen']['host'] : $this->host;
+            $this->port = $this->mainSetting['listen']['port'] ? $this->mainSetting['listen']['port'] : $this->port;
+            if(isset($this->mainSetting['listen']['socketType'])){
+                $this->socketType = constant($this->mainSetting['listen']['socketType']);
+            }
+        }
+
         switch($serverType){
-            case 'swoole_server':
+            case 'socket':
                 $this->sw = new \swoole_server($this->host, $this->port, $this->mode, $this->socketType);
                 break;
-            case 'swoole_server_ssl':
+            case 'socket_ssl':
                 $this->sw = new \swoole_server($this->host, $this->port, $this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
                 break;
-	        case 'swoole_http_server':
+	        case 'http':
                 $this->sw = new \swoole_http_server($this->host, $this->port,$this->mode);
                 break;
-            case 'swoole_websocket_server':
+            case 'websocket':
                 $this->sw = new \swoole_websocket_server($this->host, $this->port,$this->mode);
                 break;
-            case 'swoole_websocket_server_ssl':
+            case 'websocket_ssl':
                 $this->sw = new \swoole_websocket_server($this->host, $this->port,$this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
                 break;
             default:
@@ -121,15 +120,39 @@ abstract class Box implements Driver {
         }
 
         $this->addCallback();
-        
-	    $this->addListener();
 
-	    #$this->sw->addlistener('127.0.0.1', $this->port, $this->socketType);
+        if($this->mainSetting['listener']){
+            $this->addListener($this->mainSetting['listener']);
+        }
+
+
     }
 
+    protected function getServerType(){
+        return $this->mainSetting['listen']['serverType'];
+    }
     // sun class implements
     protected function addCallback(){}
-    protected function addListener(){}
+
+    protected function addListener($listeners){
+        foreach($listeners as $listener){
+            $host = isset($listener['host']) ? $listener['host'] : $this->host;
+            $port = isset($listener['port']) ? $listener['port'] : '';
+            $socketType = isset($listener['socketType']) ? $listener['socketType'] : SWOOLE_SOCK_TCP;
+            $ssl  = isset($listener['ssl']) ? $listener['ssl'] : false;
+
+            if(empty($host) ||  empty($port) || empty($socketType)){
+                continue;
+            }
+
+            if($ssl){
+                $this->sw->addlistener($host, $port, SWOOLE_SOCK_TCP | SWOOLE_SSL); // websocket http tcp
+            }else{
+                $this->sw->addlistener($host, $port, constant($socketType)); // websocket , tcp, udp, http
+            }
+
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -260,11 +283,10 @@ abstract class Box implements Driver {
                 $this->initServer();
                 $this->start();
                 break;
-            case 'reload':
-                $this->reload();
-                break;
             case 'restart':
+                sleep(1);
                 $this->shutdown();
+                sleep(1);
                 $this->initServer();
                 $this->start();
                 break;
@@ -272,7 +294,7 @@ abstract class Box implements Driver {
                 $this->status();
                 break;
             default:
-                echo 'Usage: php start.php start | stop | reload | restart | status | help' . PHP_EOL;
+                echo 'Usage: php start.php start | stop | restart | status | help' . PHP_EOL;
                 break;
         }
     }
@@ -307,23 +329,7 @@ abstract class Box implements Driver {
         }
         unlink($this->masterPidFile);
         unlink($this->managerPidFile);
-        usleep(50000);
         $this->log($this->processName . ": stop\033[31;40m [OK] \033[0m");
-        return true;
-    }
-
-    protected function reload(){
-
-        $socket = new \swoole_client($this->sockType, SWOOLE_SOCK_SYNC);
-        $socket->connect($this->host, $this->port);
-        $socket->send($this->preSysCmd .  "reload");
-        $ret = $socket->recv();
-        if (! $ret)
-        {
-            $this->log($this->processName . ": reload\033[31;40m [FAIL] \033[0m");
-            return false;
-        }
-        $this->log($this->processName . ": reload\033[31;40m [OK] \033[0m");
         return true;
     }
 
