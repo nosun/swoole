@@ -1,20 +1,18 @@
 <?php namespace Nosun\Swoole\Client;
 
-use Noodlehaus\Config;
-
 class Socket
 {
 
-    public $client;
+    protected $client;
+    protected $host;
+    protected $port;
 
-    public function __construct($config='socket.php')
+    public function __construct($host,$port,$type)
     {
-        $conf = Config::load(CONF_PATH.$config);
-        $this->type = constant($conf->get('type'));
-        $host = $conf->get('host');
-        $port = $conf->get('port');
+        $this->type = constant($type);
+        $this->host = $host;
+        $this->port = $port;
         $this->client = new \swoole_client($this->type);
-        $this->connect($host,$port);
     }
 
     public function connect($host,$port){
@@ -22,6 +20,7 @@ class Socket
         if ($this->client->connect($host, $port)) {
             return true;
         }
+
         return false;
     }
 

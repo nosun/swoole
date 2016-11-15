@@ -3,15 +3,20 @@
 class Redis {
 
 	protected $_redis;
-	protected $config;
+	protected $host;
+	protected $port;
+	protected $database;
+	protected $password;
+	protected $timeout;
+	protected $pconnect;
 
-	public function __construct($config){
-		$this->config['host'] = isset($config['host']) ? $config['host'] : '127.0.0.1';
-		$this->config['port'] = isset($config['port']) ? $config['port'] : 6379;
-		$this->config['timeout'] = isset($config['timeout']) ? $config['timeout'] : 0.0;
-		$this->config['pass'] = isset($config['pass']) ? $config['pass'] : '';
-		$this->config['database'] = isset($config['database']) ? $config['database'] : 1;
-		$this->config['pconnect'] = isset($config['pconnect']) ? $config['pconnect'] : false;
+	public function __construct($host='127.0.0.1', $port=6379, $database=1, $password=null, $timeout=0.0, $pconnect=false){
+		$this->host     = $host;
+		$this->port     = $port;
+		$this->database = $database;
+		$this->password = $password;
+		$this->timeout  = $timeout;
+		$this->pconnect = $pconnect;
 
 		try {
 			if ($this->_redis)
@@ -27,20 +32,20 @@ class Redis {
 
 	protected function connect(){
 
-		if ($this->config['pconnect'])
+		if ($this->pconnect)
 		{
-			$this->_redis->pconnect($this->config['host'], $this->config['port'], $this->config['timeout']);
+			$this->_redis->pconnect($this->host, $this->port, $this->timeout);
 		}
 		else
 		{
-			$this->_redis->connect($this->config['host'], $this->config['port'], $this->config['timeout']);
+			$this->_redis->connect($this->host, $this->port, $this->timeout);
 		}
-		if(!empty($this->config['pass'])){
-			$this->_redis->auth($this->config['pass']);
+		if(!empty($this->pass)){
+			$this->_redis->auth($this->pass);
 		}
-		if (!empty($this->config['database']))
+		if (!empty($this->database))
 		{
-			$this->_redis->select($this->config['database']);
+			$this->_redis->select($this->database);
 		}
 	}
 
@@ -70,7 +75,6 @@ class Redis {
 				{
 					throw $e;
 				}
-				// Todo make error log;
 				$this->_redis->close();
 				$this->connect();
 				$reConnect = true;

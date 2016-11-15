@@ -1,19 +1,18 @@
 <?php  namespace Nosun\Swoole\Client;
 
-use Noodlehaus\Config;
-
 class Mqtt {
 
     protected $mq;
+    protected $host;
+    protected $port;
+    protected $keepalive;
 
-    public function __construct($config='mqtt.php',$host='127.0.0.1',$port='1883'){
-
-        $conf = Config::load(CONF_PATH.$config);
-        $host = $conf['host']?$conf['host']:$host;
-        $port = $conf['port']?$conf['port']:$port;
-        $this->mq     = new \Mosquitto\client();
+    public function __construct($host='127.0.0.1',$port='1883',$keepalive=5){
+        $this->host = $host;
+        $this->port = $port;
+        $this->keepalive = $keepalive;
+        $this->mq = new \Mosquitto\client();
         $this->mq->connect($host, $port, 5);
-
     }
 
     public function publish($topic,$msg,$qos,$retain){
