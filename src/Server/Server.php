@@ -1,6 +1,9 @@
 <?php namespace Nosun\Swoole\Manager;
 
-abstract class Box implements Driver {
+use Nosun\Swoole\Contract\Driver;
+use Nosun\Swoole\Contract\Server as ServerContract;
+
+abstract class Server implements Driver {
 
     protected $sw;                          // ??
     protected $processName = 'swooleServer';  // default process name
@@ -23,6 +26,7 @@ abstract class Box implements Driver {
     protected $preSysCmd = '%+-swoole%+-';    // pre sys cmd
     protected $serverClass;                   // server Class ??
     protected $udp;
+    protected $ssl;                           // true or false
 
 	function __construct($conf)
 	{
@@ -131,6 +135,7 @@ abstract class Box implements Driver {
     protected function getServerType(){
         return $this->mainSetting['listen']['serverType'];
     }
+
     // sun class implements
     protected function addCallback(){}
 
@@ -433,13 +438,11 @@ abstract class Box implements Driver {
         return true;
     }
 
-    // 关闭 一个client，无用，暂留
     public function close($client_id){
 
         $this->sw->close($client_id);
     }
 
-    // 向 一个client 发送消息，无用，暂留
     public function send($client_id, $data){
 
         $this->sw->send($client_id, $data);

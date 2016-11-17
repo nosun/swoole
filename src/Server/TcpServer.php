@@ -1,24 +1,33 @@
 <?php namespace Nosun\Swoole\Manager;
 
-// 此处必须引入Protocol，用于核对应用层是否符合
-use Nosun\Swoole\Server\Socket\Protocol;
+use Nosun\Swoole\Contract\Network\TcpProtocol;
 
-class TcpBox extends Box
+class TcpServer extends Server implements TcpProtocol
 {
     protected $sockType   = SWOOLE_SOCK_TCP;
     protected $serverType = 'swoole_server';
+    protected $ssl        = false;
 
-    public function __construct($conf){
+    public function __construct($conf)
+    {
+        $this->ssl = isset($conf['main']['ssl']) ? $conf['main']['ssl'] : false;
+        $this->init();
         parent::__construct($conf);
     }
 
-    // create swoole server，set server，set callback function
-    protected function addCallback() {
+    protected function init()
+    {
+        if($this->ssl == true){
+            $this->serverType = 'socket_ssl';
+        }
+    }
 
+    // create swoole server，set server，set callback function
+    protected function addCallback()
+    {
         $this->sw->on('Connect', array($this, 'onConnect'));
         $this->sw->on('Receive', array($this, 'onReceive'));
         $this->sw->on('Close', array($this, 'onClose'));
-
     }
 
     /*
@@ -72,6 +81,5 @@ class TcpBox extends Box
             $this->protocol->onReceive($server, $fd, $fromId, $data);
         }
     }
-
 
 }
