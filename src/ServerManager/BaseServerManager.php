@@ -1,9 +1,8 @@
 <?php namespace Nosun\Swoole\Manager;
 
-use Nosun\Swoole\Contract\Driver;
-use Nosun\Swoole\Contract\Server as ServerContract;
+use Nosun\Swoole\Contract\ServerManagerContract as ServerContract;
 
-abstract class Server implements Driver {
+abstract class Server implements ServerContract {
 
     protected $sw;                          // ??
     protected $processName = 'swooleServer';  // default process name
@@ -261,10 +260,19 @@ abstract class Server implements Driver {
     */
 
 	public function setProtocol($protocol){
+
+        $this->checkProtocol($protocol);
+        $this->protocol = $protocol;
+
+        $protocol->server = $this;
 		$this->protocol = $protocol;
         $this->protocol->server = $this->sw;
 	}
 
+    protected function checkProtocol($protocol)
+    {
+        //
+    }
 
     /*
     |--------------------------------------------------------------------------
