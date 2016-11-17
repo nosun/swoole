@@ -10,17 +10,17 @@ class TcpServer extends BaseServer implements Protocol{
 
 	}
 
+	public function onShutdown($server, $workerId)
+	{
+
+	}
+
 	public function onReceive($server,$clientId, $fromId, $data)
 	{
 
 	}
 
 	public function onConnect($server, $fd, $fromId)
-	{
-
-	}
-
-	public function onShutdown($server, $workerId)
 	{
 
 	}

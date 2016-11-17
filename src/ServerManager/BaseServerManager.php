@@ -4,8 +4,8 @@ use Nosun\Swoole\Contract\ServerManagerContract as ServerContract;
 
 abstract class Server implements ServerContract {
 
-    protected $sw;                          // ??
-    protected $processName = 'swooleServer';  // default process name
+    protected $server;                       // swoole_server
+    protected $processName = 'swooleServer'; // default process name
     protected $host = '0.0.0.0';            // default host
     protected $port = 9501;                 // default port
     protected $listen;                      // listen port
@@ -90,36 +90,36 @@ abstract class Server implements ServerContract {
 
         switch($serverType){
             case 'socket':
-                $this->sw = new \swoole_server($this->host, $this->port, $this->mode, $this->socketType);
+                $this->server = new \swoole_server($this->host, $this->port, $this->mode, $this->socketType);
                 break;
             case 'socket_ssl':
-                $this->sw = new \swoole_server($this->host, $this->port, $this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+                $this->server = new \swoole_server($this->host, $this->port, $this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
                 break;
 	        case 'http':
-                $this->sw = new \swoole_http_server($this->host, $this->port,$this->mode);
+                $this->server = new \swoole_http_server($this->host, $this->port,$this->mode);
                 break;
             case 'websocket':
-                $this->sw = new \swoole_websocket_server($this->host, $this->port,$this->mode);
+                $this->server = new \swoole_websocket_server($this->host, $this->port,$this->mode);
                 break;
             case 'websocket_ssl':
-                $this->sw = new \swoole_websocket_server($this->host, $this->port,$this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+                $this->server = new \swoole_websocket_server($this->host, $this->port,$this->mode, SWOOLE_SOCK_TCP | SWOOLE_SSL);
                 break;
             default:
                 exit('serverType is not support');
         }
 
         // Setting the runtime parameters
-        $this->sw->set($this->serverSetting);
+        $this->server->set($this->serverSetting);
 
         // Set Event Server callback function
-        $this->sw->on('Start', array($this, 'onMasterStart'));
-        $this->sw->on('ManagerStart', array($this, 'onManagerStart'));
-        $this->sw->on('WorkerStart', array($this, 'onWorkerStart'));
-        $this->sw->on('WorkerStop', array($this, 'onWorkerStop'));
+        $this->server->on('Start', array($this, 'onMasterStart'));
+        $this->server->on('ManagerStart', array($this, 'onManagerStart'));
+        $this->server->on('WorkerStart', array($this, 'onWorkerStart'));
+        $this->server->on('WorkerStop', array($this, 'onWorkerStop'));
 
         if (isset($this->serverSetting['task_worker_num'])) {
-            $this->sw->on('Task', array($this, 'onTask'));
-            $this->sw->on('Finish', array($this, 'onFinish'));
+            $this->server->on('Task', array($this, 'onTask'));
+            $this->server->on('Finish', array($this, 'onFinish'));
         }
 
         $this->addCallback();
@@ -150,9 +150,9 @@ abstract class Server implements ServerContract {
             }
 
             if($ssl){
-                $this->sw->addlistener($host, $port, SWOOLE_SOCK_TCP | SWOOLE_SSL); // websocket http tcp
+                $this->server->addlistener($host, $port, SWOOLE_SOCK_TCP | SWOOLE_SSL); // websocket http tcp
             }else{
-                $this->sw->addlistener($host, $port, constant($socketType)); // websocket , tcp, udp, http
+                $this->server->addlistener($host, $port, constant($socketType)); // websocket , tcp, udp, http
             }
 
         }
@@ -266,7 +266,7 @@ abstract class Server implements ServerContract {
 
         $protocol->server = $this;
 		$this->protocol = $protocol;
-        $this->protocol->server = $this->sw;
+        $this->protocol->server = $this->server;
 	}
 
     protected function checkProtocol($protocol)
@@ -321,7 +321,7 @@ abstract class Server implements ServerContract {
            return false;
        }
        $this->log($this->processName . ": start\033[31;40m [OK] \033[0m");
-       $this->sw->start();
+       $this->server->start();
        return true;
    }
 
@@ -448,12 +448,12 @@ abstract class Server implements ServerContract {
 
     public function close($client_id){
 
-        $this->sw->close($client_id);
+        $this->server->close($client_id);
     }
 
     public function send($client_id, $data){
 
-        $this->sw->send($client_id, $data);
+        $this->server->send($client_id, $data);
     }
 
 }

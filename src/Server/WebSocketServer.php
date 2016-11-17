@@ -10,17 +10,17 @@ class WebSocketServer extends BaseServer implements Protocol{
 
 	}
 
+	public function onShutdown($server, $workerId)
+	{
+
+	}
+
 	public function onOpen($server,$request)
 	{
 
 	}
 
 	public function onMessage($server,$frame)
-	{
-
-	}
-
-	public function onShutdown($server, $workerId)
 	{
 
 	}
