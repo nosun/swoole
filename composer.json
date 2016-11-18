@@ -14,9 +14,7 @@
     "php": ">=5.5.0",
     "ext-openssl": "*",
     "ext-redis": "*",
-    "ext-swoole": "*",
-    "hassankhan/config": "^0.8.2",
-    "symfony/yaml": "2.5"
+    "ext-swoole": "*"
   },
   "autoload": {
     "psr-4": {

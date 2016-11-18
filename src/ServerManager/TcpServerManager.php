@@ -2,7 +2,7 @@
 
 use Nosun\Swoole\Contract\Network\TcpProtocol as Protocol;
 
-class TcpServer extends Server
+class TcpServerManager extends BaseServerManager
 {
     protected $sockType   = SWOOLE_SOCK_TCP;
     protected $serverType = 'swoole_server';
@@ -25,9 +25,9 @@ class TcpServer extends Server
     // create swoole server，set server，set callback function
     protected function addCallback()
     {
-        $this->sw->on('Connect', array($this, 'onConnect'));
-        $this->sw->on('Receive', array($this, 'onReceive'));
-        $this->sw->on('Close', array($this, 'onClose'));
+        $this->server->on('Connect', array($this, 'onConnect'));
+        $this->server->on('Receive', array($this, 'onReceive'));
+        $this->server->on('Close', array($this, 'onClose'));
     }
 
     protected function checkProtocol($protocol){

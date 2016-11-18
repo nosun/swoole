@@ -2,7 +2,7 @@
 
 use Nosun\Swoole\Contract\ServerManagerContract as ServerContract;
 
-abstract class Server implements ServerContract {
+abstract class BaseServerManager implements ServerContract {
 
     protected $server;                       // swoole_server
     protected $processName = 'swooleServer'; // default process name

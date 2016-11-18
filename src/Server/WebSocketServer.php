@@ -1,7 +1,8 @@
 <?php
 
+namespace Nosun\Swoole\Server;
+
 use Nosun\Swoole\Contract\Network\WebSocketProtocol as Protocol;
-use Nosun\Swoole\Server\BaseServer;
 
 class WebSocketServer extends BaseServer implements Protocol{
 

@@ -2,7 +2,7 @@
 
 use Nosun\Swoole\Contract\Network\WebSocketProtocol as Protocol;
 
-class WebSocketServer extends Server
+class WebSocketServer extends BaseServerManager
 {
 
     protected $sockType   = SWOOLE_SOCK_TCP;
@@ -26,9 +26,9 @@ class WebSocketServer extends Server
     // create swoole server, set server, set callback function
     protected function addCallback()
     {
-        $this->sw->on('Open', array($this, 'onOpen'));
-        $this->sw->on('Message', array($this, 'onMessage'));
-        $this->sw->on('Close', array($this, 'onClose'));
+        $this->server->on('Open', array($this, 'onOpen'));
+        $this->server->on('Message', array($this, 'onMessage'));
+        $this->server->on('Close', array($this, 'onClose'));
     }
 
     protected function checkProtocol($protocol){

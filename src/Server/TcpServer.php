@@ -1,7 +1,8 @@
 <?php
 
+namespace Nosun\Swoole\Server;
+
 use Nosun\Swoole\Contract\Network\TcpProtocol as Protocol;
-use Nosun\Swoole\Server\BaseServer;
 
 class TcpServer extends BaseServer implements Protocol{
 

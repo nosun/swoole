@@ -10,7 +10,7 @@ class BaseServer
 {
     public $server;
 
-    function __construct($config)
+    function __construct()
     {
         $this->init();
     }
