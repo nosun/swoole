@@ -1,23 +1,21 @@
-<?php namespace Nosun\Swoole\Manager;
+<?php namespace Nosun\Swoole\ServerManager;
 
 use Nosun\Swoole\Contract\Network\TcpProtocol as Protocol;
 
 class TcpServerManager extends BaseServerManager
 {
     protected $sockType   = SWOOLE_SOCK_TCP;
-    protected $serverType = 'swoole_server';
-    protected $ssl        = false;
+    protected $serverType = 'socket';
 
     public function __construct($conf)
     {
-        $this->ssl = isset($conf['main']['ssl']) ? $conf['main']['ssl'] : false;
         $this->init();
         parent::__construct($conf);
     }
 
     protected function init()
     {
-        if($this->ssl == true){
+        if(isset($conf['main']['listen']['ssl']) && $conf['main']['listen']['ssl'] == true){
             $this->serverType = 'socket_ssl';
         }
     }

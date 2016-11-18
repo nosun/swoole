@@ -1,24 +1,22 @@
-<?php namespace Nosun\Swoole\Manager;
+<?php namespace Nosun\Swoole\ServerManager;
 
 use Nosun\Swoole\Contract\Network\WebSocketProtocol as Protocol;
 
-class WebSocketServer extends BaseServerManager
+class WebSocketServerManager extends BaseServerManager
 {
 
     protected $sockType   = SWOOLE_SOCK_TCP;
     protected $serverType = 'websocket';
-    protected $ssl        = false;
 
     public function __construct($conf)
     {
-        $this->ssl = isset($conf['main']['ssl']) ? $conf['main']['ssl'] : false;
         $this->init();
         parent::__construct($conf);
     }
 
     protected function init()
     {
-        if($this->ssl == true){
+        if(isset($conf['main']['listen']['ssl']) && $conf['main']['listen']['ssl'] == true){
             $this->serverType = 'websocket_ssl';
         }
     }

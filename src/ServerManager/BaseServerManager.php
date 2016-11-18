@@ -1,4 +1,4 @@
-<?php namespace Nosun\Swoole\Manager;
+<?php namespace Nosun\Swoole\ServerManager;
 
 use Nosun\Swoole\Contract\ServerManagerContract as ServerContract;
 
@@ -25,12 +25,11 @@ abstract class BaseServerManager implements ServerContract {
     protected $preSysCmd = '%+-swoole%+-';    // pre sys cmd
     protected $serverClass;                   // server Class ??
     protected $udp;
-    protected $ssl;                           // true or false
 
 	function __construct($conf)
 	{
         // 设定默认配置
-        $this->mainSetting   = $conf['main'];
+        $this->mainSetting = $conf['main'];
         $this->serverSetting = array_merge($this->serverSetting,$conf['server']);
 	}
 
@@ -77,18 +76,18 @@ abstract class BaseServerManager implements ServerContract {
 
     protected function initServer() {
 
-        $serverType = $this->getServerType();
+        $this->setServerType();
 
         if ($this->mainSetting['listen'])
         {
             $this->host = $this->mainSetting['listen']['host'] ? $this->mainSetting['listen']['host'] : $this->host;
             $this->port = $this->mainSetting['listen']['port'] ? $this->mainSetting['listen']['port'] : $this->port;
-            if(isset($this->mainSetting['listen']['socketType'])){
+            if(isset($this->mainSetting['listen']['socketType']) && !empty($this->mainSetting['listen']['socketType'])){
                 $this->socketType = constant($this->mainSetting['listen']['socketType']);
             }
         }
 
-        switch($serverType){
+        switch($this->serverType){
             case 'socket':
                 $this->server = new \swoole_server($this->host, $this->port, $this->mode, $this->socketType);
                 break;
@@ -124,15 +123,20 @@ abstract class BaseServerManager implements ServerContract {
 
         $this->addCallback();
 
-        if($this->mainSetting['listener']){
-            $this->addListener($this->mainSetting['listener']);
+        if(isset($this->mainSetting['listener']) && count($this->mainSetting['listener']) > 0 ){
+            $listeners = $this->mainSetting['listener'];
+            $this->addListener($listeners);
         }
 
 
     }
 
-    protected function getServerType(){
-        return $this->mainSetting['listen']['serverType'];
+    protected function setServerType(){
+        if (isset($this->mainSetting['listen']['serverType']) && !empty($this->mainSetting['listen']['serverType'])) {
+            $this->serverType  = $this->mainSetting['listen']['serverType'];
+        }
+
+        return $this->serverType;
     }
 
     // sun class implements

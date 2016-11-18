@@ -1,4 +1,4 @@
-<?php namespace Nosun\Swoole\Manager;
+<?php namespace Nosun\Swoole\ServerManager;
 
 class Console
 {
