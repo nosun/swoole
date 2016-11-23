@@ -32,7 +32,7 @@ class TcpServerManager extends BaseServerManager
 
         if (!($protocol instanceof Protocol))
         {
-            throw new \Exception("The protocol is not instanceof " . Protocol::class );
+            throw new \Exception("The protocol is not instanceof Protocol");
         }
     }
 

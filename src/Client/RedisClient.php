@@ -40,8 +40,8 @@ class RedisClient {
 		{
 			$this->_redis->connect($this->host, $this->port, $this->timeout);
 		}
-		if(!empty($this->pass)){
-			$this->_redis->auth($this->pass);
+		if(!empty($this->password)){
+			$this->_redis->auth($this->password);
 		}
 		if (!empty($this->database))
 		{
