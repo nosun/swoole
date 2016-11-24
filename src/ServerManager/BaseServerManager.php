@@ -76,7 +76,7 @@ abstract class BaseServerManager implements ServerContract {
 
     protected function initServer() {
 
-        $this->setServerType();
+        // $this->setServerType();
 
         if ($this->mainSetting['listen'])
         {
@@ -88,6 +88,7 @@ abstract class BaseServerManager implements ServerContract {
         }
 
         switch($this->serverType){
+
             case 'socket':
                 $this->server = new \swoole_server($this->host, $this->port, $this->mode, $this->socketType);
                 break;
@@ -129,14 +130,6 @@ abstract class BaseServerManager implements ServerContract {
         }
 
 
-    }
-
-    protected function setServerType(){
-        if (isset($this->mainSetting['listen']['serverType']) && !empty($this->mainSetting['listen']['serverType'])) {
-            $this->serverType  = $this->mainSetting['listen']['serverType'];
-        }
-
-        return $this->serverType;
     }
 
     // sun class implements

@@ -10,11 +10,11 @@ class WebSocketServerManager extends BaseServerManager
 
     public function __construct($conf)
     {
-        $this->init();
+        $this->init($conf);
         parent::__construct($conf);
     }
 
-    protected function init()
+    protected function init($conf)
     {
         if(isset($conf['main']['listen']['ssl']) && $conf['main']['listen']['ssl'] == true){
             $this->serverType = 'websocket_ssl';
