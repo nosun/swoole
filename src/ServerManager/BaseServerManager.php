@@ -146,7 +146,7 @@ abstract class BaseServerManager implements ServerContract {
         foreach($listeners as $listener){
             $host = isset($listener['host']) ? $listener['host'] : $this->host;
             $port = isset($listener['port']) ? $listener['port'] : '';
-            $socketType = isset($listener['socketType']) ? $listener['socketType'] : SWOOLE_SOCK_TCP;
+            $socketType = isset($listener['socketType']) ? $listener['socketType'] : 'SWOOLE_SOCK_TCP';
             $ssl  = isset($listener['ssl']) ? $listener['ssl'] : false;
 
             if(empty($host) ||  empty($port) || empty($socketType)){
